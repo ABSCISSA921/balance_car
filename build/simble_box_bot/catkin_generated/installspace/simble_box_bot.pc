@@ -1,0 +1,8 @@
+prefix=/home/abscissa/learn-together/hzb/task/balance/balance_car_ws/install
+
+Name: simble_box_bot
+Description: Description of simble_box_bot
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

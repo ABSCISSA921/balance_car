@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<robot name="balance_bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="PI" value="3.1415926"/>
+
+    <xacro:property name="chassis_mass" value="1.8"/> 
+    <xacro:property name="chassis_width" value="0.28"/>
+    <xacro:property name="chassis_depth" value="0.25"/>
+    <xacro:property name="chassis_height" value="0.03"/> 
+
+    <xacro:property name="wheel_mass" value="0.3"/>  
+    <xacro:property name="wheel_radius" value="0.06"/>
+    <xacro:property name="wheel_width" value="0.025"/>
+
+
+    <xacro:macro name="box_inertial" params="m w d h">
+        <inertial>
+            <mass value="${m}"/>
+            <inertia ixx="${m / 12.0 * (d*d + h*h)}" ixy="0.0" ixz="0.0"
+                     iyy="${m / 12.0 * (w*w + h*h)}" iyz="0.0"
+                     izz="${m / 12.0 * (w*w + d*d)}"/>
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="cylinder_inertial" params="m r h">
+        <inertial>
+            <mass value="${m}"/>
+            <inertia ixx="${m / 12.0 * (3*r*r + h*h)}" ixy="0.0" ixz="0.0"
+                     iyy="${m / 2.0 * r*r}" iyz="0.0"
+                     izz="${m / 12.0 * (3*r*r + h*h)}"/>
+        </inertial>
+    </xacro:macro>
+
+
+    <!-- <link name="world"/> -->
+    <!-- <joint name="fixed_to_world" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0.4" rpy="0 0 0"/>
+    </joint> -->
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="${chassis_width} ${chassis_depth} ${chassis_height}"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${chassis_width} ${chassis_depth} ${chassis_height}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${chassis_mass}"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="${chassis_mass / 12.0 * (chassis_depth*chassis_depth + chassis_height*chassis_height)}" ixy="0.0" ixz="0.0"
+                     iyy="${chassis_mass / 12.0 * (chassis_width*chassis_width + chassis_height*chassis_height)}" iyz="0.0"
+                     izz="${chassis_mass / 12.0 * (chassis_width*chassis_width + chassis_depth*chassis_depth)}"/>
+        </inertial>
+    </link>
+
+    <xacro:macro name="wheel" params="prefix reflect">
+        <link name="${prefix}_wheel">
+            <visual>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+                </geometry>
+                <origin rpy="${PI/2} 0 0"/> </visual>
+            <collision>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+                </geometry>
+                <origin rpy="${PI/2} 0 0"/>
+            </collision>
+            <xacro:cylinder_inertial m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>     
+        </link>
+
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <parent link="base_link"/>
+            <child link="${prefix}_wheel"/>
+            <origin xyz="0 ${reflect * (chassis_depth/2 + wheel_width/2 + 0.01)} -${chassis_height/2 + 0.02}" rpy="0 0 0"/>
+            <axis xyz="0 1 0"/> <limit effort="10.0" velocity="20.0"/> <dynamics damping="0.1" friction="0.1"/> </joint>
+
+        <transmission name="${prefix}_wheel_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${prefix}_wheel_joint">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${prefix}_wheel_motor">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+
+        <gazebo reference="${prefix}_wheel">
+            <mu1>1.0</mu1>
+            <mu2>1.0</mu2>
+            <material>Gazebo/Black</material>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:wheel prefix="left" reflect="1"/>
+    <xacro:wheel prefix="right" reflect="-1"/>
+
+    <link name="imu_link">
+        <visual>
+            <geometry>
+                <box size="0.02 0.02 0.01"/>
+            </geometry>
+            <material name="red">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.02 0.02 0.01"/>
+            </geometry>
+        </collision>
+        <xacro:box_inertial m="0.01" w="0.02" d="0.02" h="0.01"/>
+    </link>
+
+    <joint name="imu_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="imu_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/> 
+    </joint>
+
+    <gazebo reference="imu_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate> <visualize>true</visualize>
+            <topic>__default_topic__</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>/imu_data</topicName> <bodyName>imu_link</bodyName>
+                <updateRateHZ>100.0</updateRateHZ>
+                <gaussianNoise>0.0</gaussianNoise> <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>imu_link</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+
+</robot>

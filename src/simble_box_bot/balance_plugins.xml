@@ -1,0 +1,9 @@
+<library path="lib/libbalance_controller">
+  <class name="simble_box_bot/BalanceController" 
+         type="simble_box_bot_ns::BalanceController" 
+         base_class_type="controller_interface::ControllerBase">
+    <description>
+      PID Balance Controller
+    </description>
+  </class>
+</library>
