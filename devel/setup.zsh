@@ -1,1 +1,0 @@
-/home/abscissa/learn-together/hzb/task/balance/balance_car_ws/devel/.private/catkin_tools_prebuild/setup.zsh

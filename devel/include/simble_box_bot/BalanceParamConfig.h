@@ -1,1 +1,0 @@
-/home/abscissa/learn-together/hzb/task/balance/balance_car_ws/devel/.private/simble_box_bot/include/simble_box_bot/BalanceParamConfig.h

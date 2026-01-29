@@ -6,4 +6,12 @@
       PID Balance Controller
     </description>
   </class>
+
+  <class name="simble_box_bot/LQRBalanceController" 
+         type="simble_box_bot_ns::LQRBalanceController" 
+         base_class_type="controller_interface::ControllerBase">
+    <description>
+      LQR Dynamics-based Balance Controller
+    </description>
+  </class>
 </library>

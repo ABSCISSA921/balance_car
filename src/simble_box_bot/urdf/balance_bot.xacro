@@ -32,13 +32,6 @@
     </xacro:macro>
 
 
-    <!-- <link name="world"/> -->
-    <!-- <joint name="fixed_to_world" type="fixed">
-        <parent link="world"/>
-        <child link="base_link"/>
-        <origin xyz="0 0 0.4" rpy="0 0 0"/>
-    </joint> -->
-
     <link name="base_link">
         <visual>
             <geometry>

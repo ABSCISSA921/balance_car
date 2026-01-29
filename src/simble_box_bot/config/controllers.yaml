@@ -7,6 +7,8 @@ my_balance_controller:
   type: "simble_box_bot/BalanceController" 
   left_wheel_name: "left_wheel_joint"
   right_wheel_name: "right_wheel_joint"
+
+  
   kp: 12.0
   ki: 0
   kd: 0.8
@@ -20,3 +22,44 @@ my_balance_controller:
   yaw_kp: 1.0 
   yaw_ki: 0.0   
   yaw_kd: 0.05
+
+
+lqr_balance_controller:
+  type: "simble_box_bot/LQRBalanceController" 
+  left_wheel_name: "left_wheel_joint"
+  right_wheel_name: "right_wheel_joint"
+
+  # 动力学计算需要的物理参数
+  mass_wheel: 0.3
+  mass_chassis: 1.5 
+  com_height: 0.095
+  wheel_radius: 0.06
+  inertia_chassis: 0.0119
+  inertia_wheel: 0.00054
+
+  # LQR 权重矩阵 Q (对角线元素)
+  lqr_q_theta: 200.0    
+  lqr_q_theta_dot: 8.0   
+  lqr_q_x: 0.0           
+  lqr_q_x_dot: 0.5    
+  lqr_r: 0.5            
+
+  yaw_kp: 1.0 
+  yaw_ki: 0.0   
+  yaw_kd: 0.05
+
+  k1: -0.1000
+  k2: -0.1395 
+  k3: -48.6809 
+  k4: -11.9691
+
+
+
+
+
+
+
+
+
+
+

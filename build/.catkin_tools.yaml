@@ -1,6 +1,0 @@
-devel_space: /home/abscissa/learn-together/hzb/task/balance/balance_car_ws/devel
-install: false
-install_space: /home/abscissa/learn-together/hzb/task/balance/balance_car_ws/install
-profile: default
-source_space: /home/abscissa/learn-together/hzb/task/balance/balance_car_ws/src
-workspace: /home/abscissa/learn-together/hzb/task/balance/balance_car_ws
