@@ -9,8 +9,11 @@
 
   <rosparam file="$(find simble_box_bot)/config/controllers.yaml" command="load"/>
 
+  <arg name="controller_name" value="my_balance_controller" if="$(eval arg('type') == 'pid')"/>
+  <arg name="controller_name" value="lqr_balance_controller" if="$(eval arg('type') == 'lqr')"/>
+
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" args="joint_state_controller my_balance_controller"/>
+    output="screen" args="joint_state_controller $(arg controller_name)"/>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 </launch>
