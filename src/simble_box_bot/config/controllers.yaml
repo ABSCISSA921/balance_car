@@ -37,21 +37,31 @@ lqr_balance_controller:
   inertia_chassis: 0.0119
   inertia_wheel: 0.00054
 
-  # LQR 权重矩阵 Q (对角线元素)
+  # LQR 权重矩阵 Q 
   lqr_q_theta: 200.0    
   lqr_q_theta_dot: 8.0   
   lqr_q_x: 0.0           
   lqr_q_x_dot: 0.5    
-  lqr_r: 0.5            
+  lqr_r: 0.5      
 
   yaw_kp: 1.0 
   yaw_ki: 0.0   
   yaw_kd: 0.05
 
-  k1: -0.1000
-  k2: -0.1395 
-  k3: -48.6809 
-  k4: -11.9691
+  k1: -1.9365
+  k2: -2.2383 
+  k3: -12.4229 
+  k4: -1.8128
+
+
+
+
+
+
+
+
+
+
 
 
 

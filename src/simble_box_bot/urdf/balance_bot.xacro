@@ -72,7 +72,7 @@
             <parent link="base_link"/>
             <child link="${prefix}_wheel"/>
             <origin xyz="0 ${reflect * (chassis_depth/2 + wheel_width/2 + 0.01)} -${chassis_height/2 + 0.02}" rpy="0 0 0"/>
-            <axis xyz="0 1 0"/> <limit effort="10.0" velocity="20.0"/> <dynamics damping="0.1" friction="0.1"/> </joint>
+            <axis xyz="0 1 0"/> <limit effort="3.0" velocity="70.0"/> <dynamics damping="0.01" friction="0.01"/> </joint>
 
         <transmission name="${prefix}_wheel_trans">
             <type>transmission_interface/SimpleTransmission</type>
@@ -109,7 +109,7 @@
                 <box size="0.02 0.02 0.01"/>
             </geometry>
         </collision>
-        <xacro:box_inertial m="0.01" w="0.02" d="0.02" h="0.01"/>
+        <!-- <xacro:box_inertial m="0.01" w="0.02" d="0.02" h="0.01"/> -->
     </link>
 
     <joint name="imu_joint" type="fixed">

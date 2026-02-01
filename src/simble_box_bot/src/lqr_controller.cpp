@@ -31,7 +31,6 @@ bool LQRBalanceController::init(hardware_interface::EffortJointInterface* hw, ro
     return true;
 }
 
-
 void LQRBalanceController::starting(const ros::Time& time) {
     cmd_linear_x_ = 0.0;
     cmd_yaw_rate_ = 0.0;
@@ -39,6 +38,20 @@ void LQRBalanceController::starting(const ros::Time& time) {
     left_joint_.setCommand(0.0);
     right_joint_.setCommand(0.0);
     yaw_pid_.reset();
+}
+
+void LQRBalanceController::rampVelocity(const ros::Duration& period) {
+    double ramp_rate = 0.1; // m/s^2
+    double dt = period.toSec();
+    double max_delta_v = ramp_rate * dt;
+
+    double vel_error = cmd_linear_x_ - target_linear_vel_;
+
+    if (std::abs(vel_error) > max_delta_v) {
+        target_linear_vel_ += (vel_error > 0 ? max_delta_v : -max_delta_v);
+    } else {
+        target_linear_vel_ = cmd_linear_x_;
+    }
 }
 
 void LQRBalanceController::update(const ros::Time& time, const ros::Duration& period) {
@@ -69,15 +82,23 @@ void LQRBalanceController::update(const ros::Time& time, const ros::Duration& pe
     double pitch_error = target_pitch_ - current_pitch_;
     double pitch_dot_error = target_pitch_dot_ - current_pitch_dot_;
 
-    double base_effort = (k1 * pos_error + k2 * vel_error + k3 * pitch_error + k4 * pitch_dot_error);
+    
+    base_effort = k1 * pos_error + k2 * vel_error + k3 * pitch_error + k4 * pitch_dot_error;
+        // if (current_pitch_ > 0.58){
+        //     base_effort += 0.5 ;
+        // }
+        // else if(current_pitch_ < -0.58){
+        // base_effort -= 0.5 ;
+        // }
+    
     double turn_effort = yaw_pid_.computeCommand(cmd_yaw_rate_ - imu_data.angular_velocity.z, period);
     
 
     double left_effort = base_effort / 2.0 - turn_effort;
     double right_effort = base_effort / 2.0 + turn_effort;
 
-    // 倒地保护
-    // if (std::abs(current_pitch_) > 0.8) { 
+    // //倒地保护
+    // if (std::abs(current_pitch_) > 0.58) { 
     //     left_effort = 0.0; 
     //     right_effort = 0.0; 
     //     target_pos_ = 0.0;
@@ -86,7 +107,12 @@ void LQRBalanceController::update(const ros::Time& time, const ros::Duration& pe
 
     left_joint_.setCommand(left_effort);
     right_joint_.setCommand(right_effort);
-    ROS_INFO_THROTTLE(0.5, "Angle: %.2f, Computed Torque u: %.2f", current_pitch_, base_effort);
+    ROS_INFO_THROTTLE(0.5, "Angle: %.2f, Computed Torque u: %.2f", current_pitch_, base_effort / 2.0);
+}
+
+void LQRBalanceController::stopping(const ros::Time& time) {
+  left_joint_.setCommand(0.0);
+  right_joint_.setCommand(0.0);
 }
 
 void LQRBalanceController::imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {

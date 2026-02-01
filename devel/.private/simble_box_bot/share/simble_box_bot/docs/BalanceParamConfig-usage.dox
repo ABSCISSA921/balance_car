@@ -1,0 +1,9 @@
+\subsubsection usage Usage
+\verbatim
+<node name="balance_controller" pkg="simble_box_bot" type="balance_controller">
+  <param name="kp" type="double" value="25.0" />
+  <param name="ki" type="double" value="0.0" />
+  <param name="kd" type="double" value="2.0" />
+</node>
+\endverbatim
+
