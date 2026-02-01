@@ -25,11 +25,13 @@ public:
     bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle& nh) override;
     void starting(const ros::Time& time) override;
     void update(const ros::Time& time, const ros::Duration& period) override;
+    void stopping(const ros::Time& time) override;
 
 private:
     hardware_interface::JointHandle left_joint_, right_joint_;
     void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
     void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
+    void rampVelocity(const ros::Duration& period);
 
 
     // 订阅者
@@ -41,6 +43,7 @@ private:
 
     double cmd_linear_x_ = 0.0;
     double cmd_yaw_rate_ = 0.0;
+    double base_effort =0;
 
     double current_pos_ = 0.0; // 当前位移
     double current_vel_ = 0.0; // 当前速度
@@ -56,7 +59,7 @@ private:
 
     double wheel_radius_ = 0.06;      // 轮子半径
 
-    double last_effort_ = 0.0; // 上一次控制输出
+    double last_effort_ = 0.0; 
     double k1, k2, k3, k4; // LQR 控制器增益
 
 };

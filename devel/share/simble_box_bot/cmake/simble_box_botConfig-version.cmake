@@ -1,0 +1,1 @@
+/home/abscissa/learn-together/hzb/task/balance/balance_car_ws/devel/.private/simble_box_bot/share/simble_box_bot/cmake/simble_box_botConfig-version.cmake
